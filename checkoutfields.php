@@ -3,6 +3,7 @@
 ## CHECKOUT FIELDS WOOCOMMERCE
 ## Auke Jongbloed
 ## www.wordpressassist.nl
+## auke@wordpressassist.nl
 ## https://github.com/Auke1810/Woocommerce-checkout-fields
 ##
 #############################################################################################
