@@ -1,10 +1,13 @@
-<?php #######################################################################################
+<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+#############################################################################################
 ##
 ## CHECKOUT FIELDS WOOCOMMERCE
 ## Auke Jongbloed
 ## www.wordpressassist.nl
 ## auke@wordpressassist.nl
 ## https://github.com/Auke1810/Woocommerce-checkout-fields
+##
+## @DOC: https://docs.woocommerce.com/document/tutorial-customising-checkout-fields-using-actions-and-filters/
 ##
 ## Voor de Nederlandse markt is deze woocommerce checkout fields snippet aangemaakt.
 ## Om te voorkomen dat er bestellingen door worden gegeven met een adres zonder huisnummer
@@ -76,9 +79,10 @@ function wpass_add_field_and_reorder_fields( $fields ) {
     return $checkout_fields;
 } 
  
- 
-// ------------------------------------
-// Add Billing House # to Address Fields
+
+/**
+ * Add Billing House # to Address Fields
+ */
  
 add_filter( 'woocommerce_order_formatted_billing_address' , 'wpass_default_billing_address_fields', 10, 2 );
  
@@ -88,8 +92,9 @@ return $fields;
 }
  
  
-// ------------------------------------
-// Add Shipping House # to Address Fields
+/**
+ * Add Shipping House # to Address Fields
+ */
  
 add_filter( 'woocommerce_order_formatted_shipping_address' , 'wpass_default_shipping_address_fields', 10, 2 );
  
@@ -98,8 +103,9 @@ $fields['shipping_houseno'] = get_post_meta( $order->id, '_shipping_houseno', tr
 return $fields;
 }
  
-// ------------------------------------
-// Create 'replacements' for new Address Fields
+/**
+ * Create 'replacements' for new Address Fields
+ */
  
 add_filter( 'woocommerce_formatted_address_replacements', 'add_new_replacement_fields',10,2 );
  
@@ -109,8 +115,9 @@ $replacements['{shipping_houseno}'] = isset($address['shipping_houseno']) ? $add
 return $replacements;
 }
  
-// ------------------------------------
-// Show Shipping & Billing House # for different countries
+/**
+ * Show Shipping & Billing House # for different countries
+ */
  
 add_filter( 'woocommerce_localisation_address_formats', 'wpass_new_address_formats' );
  
@@ -119,3 +126,47 @@ $formats['IE'] = "{name}\n{company}\n{address_1}\n{billing_houseno}\n{shipping_h
 $formats['UK'] = "{name}\n{company}\n{address_1}\n{billing_houseno}\n{shipping_houseno}\n{city}\n{state}\n{postcode}\n{country}";
 return $formats;
 }
+
+
+/**
+ * wpass_custom_order_formatted_billing_address
+ */
+add_filter( 'woocommerce_order_formatted_billing_address' , 'wpass_custom_order_formatted_billing_address', 10,2 );
+function wpass_custom_order_formatted_billing_address( $address, $wc_order ) {
+	
+	$address = array(
+		'first_name'	=> $wc_order->billing_first_name,
+		'last_name'		=> $wc_order->billing_last_name,
+		'company'		=> $wc_order->billing_company,
+		'address_1'		=> $wc_order->billing_address_1,
+		'address_2'		=> get_post_meta( $wc_order->id, '_billing_houseno', true ),
+		'city'			=> $wc_order->billing_city,
+		'state'			=> $wc_order->billing_state,
+		'postcode'		=> $wc_order->billing_postcode,
+		'country'		=> $wc_order->billing_country
+	);
+
+	return $address;
+	
+}
+
+/**
+ * wpass_custom_order_formatted_billing_address
+*/
+add_filter( 'woocommerce_order_formatted_shipping_address' , 'wpass_custom_order_formatted_shipping_address', 10,2 );
+function wpass_custom_order_formatted_shipping_address( $address, $wc_order ) {
+	
+	$address = array(
+		'first_name'	=> $wc_order->billing_first_name,
+		'last_name'		=> $wc_order->billing_last_name,
+		'company'		=> $wc_order->billing_company,
+		'address_1'		=> $wc_order->billing_address_1,
+		'address_2'		=> get_post_meta( $wc_order->id, '_shipping_houseno', true ),
+		'city'			=> $wc_order->billing_city,
+		'state'			=> $wc_order->billing_state,
+		'postcode'		=> $wc_order->billing_postcode,
+		'country'		=> $wc_order->billing_country
+	);
+
+	return $address;
+	}
